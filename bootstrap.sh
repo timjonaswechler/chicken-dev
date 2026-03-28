@@ -9,7 +9,12 @@
 set -Eeuo pipefail
 
 # Determine script directory (works for both local and piped execution)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)/scripts"
+if [ -n "${BASH_SOURCE[0]:-}" ]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts"
+else
+  SCRIPT_DIR=""
+fi
+
 if [ ! -d "$SCRIPT_DIR" ]; then
   # Piped execution: download scripts to temp dir
   TEMP_DIR="$(mktemp -d)"
