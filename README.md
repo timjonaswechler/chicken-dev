@@ -32,15 +32,21 @@ curl -fsSL https://raw.githubusercontent.com/timjonaswechler/chicken-dev/main/bo
 
 ## Repositories
 
-Das Skript klont folgende Repos in `~/GitHub-Projekte/`:
+Das Skript klont die Repos in das aktuelle Verzeichnis (oder `WORKSPACE_ROOT` falls gesetzt):
 
 ```
-~/GitHub-Projekte/
+./
 ├── chicken/          → Game Library (immer)
-├── chicken-dev/      → Dieses Repo (Bootstrap)
-└── fos/
-    ├── campfire/     → Game Client (--apps campfire)
-    └── bastion/      → Headless Server (--apps bastion)
+├── fos/
+│   ├── campfire/     → Game Client (--apps campfire)
+│   └── bastion/      → Headless Server (--apps bastion)
+```
+
+Oder mit eigenem Pfad:
+
+```bash
+mkdir ~/dev && cd ~/dev
+curl -fsSL ... | bash
 ```
 
 Lokale Entwicklung nutzt `[patch]` in `.cargo/config.toml`, damit campfire und bastion gegen die lokale chicken-Entwicklungsvariante kompilieren.
@@ -60,6 +66,10 @@ Das Skript kann mehrfach ausgeführt werden:
 - Existierende Repos werden per `git pull --ff-only` aktualisiert
 - Tools werden nur installiert wenn sie fehlen
 - `.env` Dateien werden nur erzeugt wenn sie noch nicht existieren
+
+## SSH / HTTPS
+
+Das Skript prüft automatisch ob SSH zu GitHub funktioniert. Falls kein SSH-Key eingerichtet ist, wird auf HTTPS umgeschaltet. Für Push-Rechte wird trotzdem ein SSH-Key oder HTTPS-Token benötigt.
 
 ## Manuelle Schritte
 
