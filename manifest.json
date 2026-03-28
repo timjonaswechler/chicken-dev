@@ -1,0 +1,47 @@
+{
+  "projectName": "chicken-stack",
+  "workspaceRoot": "~/GitHub-Projekte",
+  "repos": [
+    {
+      "name": "chicken",
+      "url": "git@github.com:timjonaswechler/chicken.git",
+      "path": "chicken",
+      "relativePatchPath": "../../chicken/crates/chicken"
+    },
+    {
+      "name": "campfire",
+      "url": "git@github.com:timjonaswechler/campfire.git",
+      "path": "fos/campfire",
+      "dependsOn": ["chicken"]
+    },
+    {
+      "name": "bastion",
+      "url": "git@github.com:timjonaswechler/bastion.git",
+      "path": "fos/bastion",
+      "dependsOn": ["chicken"],
+      "optionalTools": ["go"]
+    }
+  ],
+  "requirements": {
+    "common": ["git", "rustup", "just"],
+    "linux": [
+      "libasound2-dev",
+      "libudev-dev",
+      "libx11-dev",
+      "libxcursor-dev",
+      "libxrandr-dev",
+      "libxi-dev",
+      "libvulkan-dev",
+      "libwayland-dev",
+      "libxkbcommon-dev",
+      "pkg-config"
+    ],
+    "macos": ["cmake", "pkg-config"],
+    "bastion": ["go"]
+  },
+  "manualSteps": [
+    "SSH-Key zu GitHub hinzufügen: https://github.com/settings/keys",
+    "STEAM_APP_ID in fos/campfire/.env setzen (optional, default: 480)",
+    "Editor/IDE einrichten (rust-analyzer empfohlen)"
+  ]
+}
