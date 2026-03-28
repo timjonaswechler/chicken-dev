@@ -9,15 +9,15 @@ ensure_just() {
     return 0
   fi
 
-  info "just nicht gefunden, versuche Installation..."
+  info "just not found, attempting installation..."
 
   if [ "$(detect_os)" = "macos" ] && has_cmd brew; then
     brew install just
   elif has_cmd cargo; then
     cargo install just
   else
-    fail "Weder cargo noch brew gefunden. Bitte just manuell installieren: https://github.com/casey/just#installation"
+    fail "Neither cargo nor brew found. Please install just manually: https://github.com/casey/just#installation"
   fi
 
-  success "just $(just --version | awk '{print $2}') installiert"
+  success "just $(just --version | awk '{print $2}') installed"
 }

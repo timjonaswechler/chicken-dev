@@ -11,12 +11,12 @@ setup_campfire() {
   step "Campfire Setup"
 
   if [ ! -d "$app_dir" ]; then
-    warn "campfire nicht gefunden unter $app_dir (wird vom Bootstrap geklont)"
+    warn "campfire not found at $app_dir (will be cloned by bootstrap)"
     return 0
   fi
 
   # Copy .env from template if missing
   cp_if_missing "$TEMPLATES_DIR/campfire.env.example" "$app_dir/.env"
 
-  success "Campfire Setup abgeschlossen"
+  success "Campfire setup complete"
 }

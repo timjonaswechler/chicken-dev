@@ -11,7 +11,7 @@ setup_bastion() {
   step "Bastion Setup"
 
   if [ ! -d "$app_dir" ]; then
-    warn "bastion nicht gefunden unter $app_dir (wird vom Bootstrap geklont)"
+    warn "bastion not found at $app_dir (will be cloned by bootstrap)"
     return 0
   fi
 
@@ -20,10 +20,10 @@ setup_bastion() {
 
   # Ensure Go modules are downloaded for bastion-tui
   if [ -d "$app_dir/bastion-tui" ] && has_cmd go; then
-    info "Lade Go-Module für bastion-tui..."
+    info "Downloading Go modules for bastion-tui..."
     go mod download -C "$app_dir/bastion-tui"
-    success "Go-Module geladen"
+    success "Go modules downloaded"
   fi
 
-  success "Bastion Setup abgeschlossen"
+  success "Bastion setup complete"
 }

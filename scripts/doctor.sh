@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 doctor() {
-  step "Umgebung prüfen"
+  step "Checking environment"
 
   local errors=0
   local warnings=0
@@ -15,7 +15,7 @@ doctor() {
     if has_cmd "$tool"; then
       success "$tool: $($tool --version 2>/dev/null | head -1)"
     else
-      fail "$tool fehlt!"
+      fail "$tool missing!"
       errors=$((errors + 1))
     fi
   done
@@ -24,9 +24,9 @@ doctor() {
   if has_cmd rustup; then
     for component in clippy rustfmt; do
       if rustup component list --installed 2>/dev/null | grep -q "$component"; then
-        success "rustup: $component installiert"
+        success "rustup: $component installed"
       else
-        warn "rustup: $component fehlt"
+        warn "rustup: $component missing"
         warnings=$((warnings + 1))
       fi
     done
@@ -36,9 +36,9 @@ doctor() {
   local repos=("chicken" "fos/campfire")
   for repo in "${repos[@]}"; do
     if [ -d "$WORKSPACE_ROOT/$repo/.git" ]; then
-      success "Repo: $repo vorhanden"
+      success "Repo: $repo present"
     else
-      warn "Repo: $repo fehlt unter $WORKSPACE_ROOT/$repo"
+      warn "Repo: $repo missing at $WORKSPACE_ROOT/$repo"
       warnings=$((warnings + 1))
     fi
   done
@@ -47,9 +47,9 @@ doctor() {
   local campfire_cargo_config="$WORKSPACE_ROOT/fos/campfire/.cargo/config.toml"
   if [ -f "$campfire_cargo_config" ]; then
     if grep -q 'path.*chicken/crates/chicken' "$campfire_cargo_config"; then
-      success "chicken patch konfiguriert (campfire)"
+      success "chicken patch configured (campfire)"
     else
-      warn "chicken patch nicht in $campfire_cargo_config gefunden"
+      warn "chicken patch not found in $campfire_cargo_config"
       warnings=$((warnings + 1))
     fi
   fi
@@ -58,9 +58,9 @@ doctor() {
   for app_dir in "$WORKSPACE_ROOT/fos/campfire" "$WORKSPACE_ROOT/fos/bastion"; do
     if [ -d "$app_dir" ]; then
       if [ -f "$app_dir/.env" ]; then
-        success ".env vorhanden: $app_dir"
+        success ".env present: $app_dir"
       else
-        info ".env fehlt: $app_dir (optional)"
+        info ".env missing: $app_dir (optional)"
       fi
     fi
   done
@@ -68,10 +68,10 @@ doctor() {
   # Summary
   echo ""
   if [ $errors -gt 0 ]; then
-    fail "$errors Fehler gefunden. Bitte beheben."
+    fail "$errors error(s) found. Please fix."
   elif [ $warnings -gt 0 ]; then
-    warn "$warnings Warnung(en). Setup sollte aber funktionieren."
+    warn "$warnings warning(s). Setup should still work."
   else
-    success "Alles grün! Entwicklungsumgebung bereit."
+    success "All checks passed. Development environment ready."
   fi
 }

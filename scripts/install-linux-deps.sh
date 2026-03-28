@@ -8,14 +8,14 @@ install_linux_deps() {
     return 0
   fi
 
-  step "Linux System-Abhängigkeiten"
+  step "Linux System Dependencies"
 
   local pm
   pm="$(detect_pkg_manager)"
 
   case "$pm" in
     apt)
-      info "Installiere Bevy-Dependencies via apt..."
+      info "Installing Bevy dependencies via apt..."
       sudo apt-get update -qq
       sudo apt-get install -y \
         libasound2-dev \
@@ -30,7 +30,7 @@ install_linux_deps() {
         pkg-config
       ;;
     dnf)
-      info "Installiere Bevy-Dependencies via dnf..."
+      info "Installing Bevy dependencies via dnf..."
       sudo dnf install -y \
         alsa-lib-devel \
         systemd-devel \
@@ -44,7 +44,7 @@ install_linux_deps() {
         pkg-config
       ;;
     pacman)
-      info "Installiere Bevy-Dependencies via pacman..."
+      info "Installing Bevy dependencies via pacman..."
       sudo pacman -Sy --noconfirm \
         alsa-lib \
         systemd \
@@ -58,11 +58,11 @@ install_linux_deps() {
         pkg-config
       ;;
     *)
-      warn "Paketmanager '$pm' nicht erkannt. Bitte manuell installieren:"
+      warn "Package manager '$pm' not recognized. Please install manually:"
       warn "  libasound2-dev libudev-dev libx11-dev libxcursor-dev libxrandr-dev"
       warn "  libxi-dev libvulkan-dev libwayland-dev libxkbcommon-dev pkg-config"
       ;;
   esac
 
-  success "Linux System-Abhängigkeiten installiert"
+  success "Linux system dependencies installed"
 }

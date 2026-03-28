@@ -9,13 +9,13 @@ ensure_git() {
     return 0
   fi
 
-  info "git nicht gefunden, versuche Installation..."
+  info "git not found, attempting installation..."
 
   if [ "$(detect_os)" = "macos" ]; then
     if has_cmd brew; then
       brew install git
     else
-      fail "Homebrew nicht gefunden. Bitte git manuell installieren."
+      fail "Homebrew not found. Please install git manually."
     fi
   else
     install_pkg git

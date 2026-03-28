@@ -1,6 +1,5 @@
 {
   "projectName": "chicken-stack",
-  "workspaceRoot": "~/GitHub-Projekte",
   "repos": [
     {
       "name": "chicken",
@@ -40,8 +39,8 @@
     "bastion": ["go"]
   },
   "manualSteps": [
-    "SSH-Key zu GitHub hinzufügen: https://github.com/settings/keys",
-    "STEAM_APP_ID in fos/campfire/.env setzen (optional, default: 480)",
-    "Editor/IDE einrichten (rust-analyzer empfohlen)"
+    "Add SSH key to GitHub: https://github.com/settings/keys",
+    "Set STEAM_APP_ID in fos/campfire/.env (optional, default: 480)",
+    "Set up your editor/IDE (rust-analyzer recommended)"
   ]
 }

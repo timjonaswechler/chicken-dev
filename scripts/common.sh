@@ -60,7 +60,7 @@ install_pkg() {
     dnf)    sudo dnf install -y "$pkg" ;;
     pacman) sudo pacman -Sy --noconfirm "$pkg" ;;
     zypper) sudo zypper install -y "$pkg" ;;
-    *)      fail "Kein unterstützter Paketmanager. Bitte '$pkg' manuell installieren." ;;
+    *)      fail "No supported package manager found. Please install '$pkg' manually." ;;
   esac
 }
 
@@ -75,24 +75,52 @@ cp_if_missing() {
   local dst="$2"
   if [ ! -f "$dst" ]; then
     cp "$src" "$dst"
-    success "Erstellt: $dst"
+    success "Created: $dst"
   else
-    info "Existiert bereits: $dst (übersprungen)"
+    info "Already exists: $dst (skipped)"
   fi
 }
 
 # Resolve workspace root — default to current directory
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(pwd)}"
 
-# Pre-detect git URL style (cached, checked once)
+# Check if SSH keys for GitHub exist
+_has_ssh_keys() {
+  # Check for common SSH key files
+  for key in "$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa" "$HOME/.ssh/id_ecdsa"; do
+    if [ -f "$key" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Test SSH connection to GitHub
+_test_ssh_github() {
+  # ssh -T returns exit code 1 on success (no shell access)
+  # so we check the output, not the exit code
+  local output
+  output="$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1)" || true
+  if echo "$output" | grep -q "successfully authenticated"; then
+    return 0
+  fi
+  return 1
+}
+
+# Detect git URL style (cached, checked once)
 _init_git_urls() {
   if [ -z "${_GIT_URLS_DETECTED:-}" ]; then
-    if ssh -o ConnectTimeout=5 -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-      _GIT_SSH_AVAILABLE=true
-      info "SSH-Verbindung zu GitHub: OK"
+    if _has_ssh_keys; then
+      if _test_ssh_github; then
+        _GIT_SSH_AVAILABLE=true
+        info "SSH connection to GitHub: OK"
+      else
+        _GIT_SSH_AVAILABLE=false
+        warn "SSH keys found but GitHub authentication failed, using HTTPS"
+      fi
     else
       _GIT_SSH_AVAILABLE=false
-      warn "SSH zu GitHub nicht verfügbar, nutze HTTPS"
+      info "No SSH keys found, using HTTPS"
     fi
     _GIT_URLS_DETECTED=true
   fi

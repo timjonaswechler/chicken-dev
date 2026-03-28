@@ -8,10 +8,10 @@ install_macos_deps() {
     return 0
   fi
 
-  step "macOS System-Abhängigkeiten"
+  step "macOS System Dependencies"
 
   if ! has_cmd brew; then
-    info "Homebrew nicht gefunden, installiere..."
+    info "Homebrew not found, installing..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 
@@ -20,17 +20,17 @@ install_macos_deps() {
 
   for dep in "${deps[@]}"; do
     if brew list "$dep" &>/dev/null; then
-      success "$dep vorhanden"
+      success "$dep present"
     else
       to_install+=("$dep")
     fi
   done
 
   if [ ${#to_install[@]} -gt 0 ]; then
-    info "Installiere: ${to_install[*]}"
+    info "Installing: ${to_install[*]}"
     brew install "${to_install[@]}"
-    success "macOS Dependencies installiert"
+    success "macOS dependencies installed"
   else
-    success "Alle macOS Dependencies vorhanden"
+    success "All macOS dependencies present"
   fi
 }

@@ -9,13 +9,13 @@ ensure_go() {
     return 0
   fi
 
-  info "Go nicht gefunden, versuche Installation..."
+  info "Go not found, attempting installation..."
 
   if [ "$(detect_os)" = "macos" ]; then
     if has_cmd brew; then
       brew install go
     else
-      fail "Homebrew nicht gefunden. Bitte Go manuell installieren: https://go.dev/dl/"
+      fail "Homebrew not found. Please install Go manually: https://go.dev/dl/"
     fi
   else
     local pm
@@ -25,7 +25,7 @@ ensure_go() {
       dnf)    sudo dnf install -y golang ;;
       pacman) sudo pacman -Sy --noconfirm go ;;
       *)
-        warn "Paketmanager '$pm' nicht unterstützt für Go. Installiere von go.dev..."
+        warn "Package manager '$pm' not supported for Go. Installing from go.dev..."
         local go_version="1.24.1"
         local arch
         arch="$(detect_arch)"
@@ -39,5 +39,5 @@ ensure_go() {
     esac
   fi
 
-  success "Go $(go version | awk '{print $3}') installiert"
+  success "Go $(go version | awk '{print $3}') installed"
 }

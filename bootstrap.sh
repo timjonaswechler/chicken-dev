@@ -77,7 +77,7 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     *)
-      echo "Unbekannte Option: $1"
+      echo "Unknown option: $1"
       usage
       exit 1
       ;;
@@ -103,7 +103,7 @@ main() {
   source "$SCRIPT_DIR/ensure-rust.sh"
   source "$SCRIPT_DIR/ensure-just.sh"
 
-  step "Basis-Tools"
+  step "Core Tools"
   ensure_git
   ensure_rust
   ensure_just
@@ -111,7 +111,7 @@ main() {
   # Go only if bastion requested
   if [[ "$APPS" == *"bastion"* || "$APPS" == "all" ]]; then
     source "$SCRIPT_DIR/ensure-go.sh"
-    step "Bastion-Tools"
+    step "Bastion Tools"
     ensure_go
   fi
 
@@ -162,12 +162,12 @@ main() {
   fi
 
   # Manual steps
-  step "Manuelle Schritte"
-  echo -e "  ${YELLOW}1.${NC} SSH-Key zu GitHub hinzufügen: ${CYAN}https://github.com/settings/keys${NC}"
-  echo -e "  ${YELLOW}2.${NC} STEAM_APP_ID in fos/campfire/.env setzen (optional, default: 480)"
-  echo -e "  ${YELLOW}3.${NC} Editor/IDE einrichten (rust-analyzer empfohlen)"
+  step "Manual Steps"
+  echo -e "  ${YELLOW}1.${NC} Add SSH key to GitHub: ${CYAN}https://github.com/settings/keys${NC}"
+  echo -e "  ${YELLOW}2.${NC} Set STEAM_APP_ID in fos/campfire/.env (optional, default: 480)"
+  echo -e "  ${YELLOW}3.${NC} Set up your editor/IDE (rust-analyzer recommended)"
   echo ""
-  success "Bootstrap abgeschlossen!"
+  success "Bootstrap complete!"
 }
 
 # --- Helper: clone or update ---
@@ -180,12 +180,12 @@ clone_or_update_repo() {
 
   if [ -d "$path/.git" ]; then
     info "Update $name..."
-    git -C "$path" pull --ff-only 2>/dev/null || warn "Update für $name fehlgeschlagen (lokale Änderungen?)"
-    success "$name aktualisiert"
+    git -C "$path" pull --ff-only 2>/dev/null || warn "Update for $name failed (local changes?)"
+    success "$name updated"
   else
     info "Clone $name..."
     git clone "$url" "$path"
-    success "$name geklont nach $path"
+    success "$name cloned to $path"
   fi
 }
 
