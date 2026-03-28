@@ -126,6 +126,9 @@ main() {
   fi
 
   # Clone repos
+  step "GitHub Access"
+  require_github_ssh
+
   step "Repositories"
 
   # chicken is always needed

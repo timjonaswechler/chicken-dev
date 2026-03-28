@@ -86,7 +86,6 @@ WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(pwd)}"
 
 # Check if SSH keys for GitHub exist
 _has_ssh_keys() {
-  # Check for common SSH key files
   for key in "$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa" "$HOME/.ssh/id_ecdsa"; do
     if [ -f "$key" ]; then
       return 0
@@ -97,8 +96,6 @@ _has_ssh_keys() {
 
 # Test SSH connection to GitHub
 _test_ssh_github() {
-  # ssh -T returns exit code 1 on success (no shell access)
-  # so we check the output, not the exit code
   local output
   output="$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1)" || true
   if echo "$output" | grep -q "successfully authenticated"; then
@@ -107,31 +104,42 @@ _test_ssh_github() {
   return 1
 }
 
-# Detect git URL style (cached, checked once)
-_init_git_urls() {
-  if [ -z "${_GIT_URLS_DETECTED:-}" ]; then
-    if _has_ssh_keys; then
-      if _test_ssh_github; then
-        _GIT_SSH_AVAILABLE=true
-        info "SSH connection to GitHub: OK"
-      else
-        _GIT_SSH_AVAILABLE=false
-        warn "SSH keys found but GitHub authentication failed, using HTTPS"
-      fi
-    else
-      _GIT_SSH_AVAILABLE=false
-      info "No SSH keys found, using HTTPS"
-    fi
-    _GIT_URLS_DETECTED=true
+# Verify SSH access to GitHub (required for local dev, skipped in CI)
+# Call early in bootstrap to fail fast if SSH is not set up
+require_github_ssh() {
+  # Skip in CI — GitHub Actions has automatic access via GITHUB_TOKEN
+  if [ "${CI:-}" = "true" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+    info "CI detected, skipping SSH check"
+    return 0
   fi
+
+  if ! _has_ssh_keys; then
+    fail "No SSH keys found. Please set up SSH access to GitHub first:
+  1. Generate a key: ssh-keygen -t ed25519 -C \"your@email.com\"
+  2. Add to ssh-agent: eval \"\$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519
+  3. Add public key to GitHub: https://github.com/settings/keys"
+  fi
+
+  if ! _test_ssh_github; then
+    fail "SSH key found but GitHub authentication failed. Please check:
+  1. Your SSH key is added to GitHub: https://github.com/settings/keys
+  2. You have access to the repositories
+  3. ssh -T git@github.com works"
+  fi
+
+  success "GitHub SSH access: OK"
 }
 
 git_repo_url() {
   local repo="$1"
-  _init_git_urls
-  if [ "$_GIT_SSH_AVAILABLE" = true ]; then
-    echo "git@github.com:timjonaswechler/${repo}.git"
+  # In CI: use HTTPS with GITHUB_TOKEN for authentication
+  if [ "${CI:-}" = "true" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+      echo "https://x-access-token:${GITHUB_TOKEN}@github.com/timjonaswechler/${repo}.git"
+    else
+      echo "https://github.com/timjonaswechler/${repo}.git"
+    fi
   else
-    echo "https://github.com/timjonaswechler/${repo}.git"
+    echo "git@github.com:timjonaswechler/${repo}.git"
   fi
 }
