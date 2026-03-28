@@ -85,11 +85,13 @@ main() {
   echo ""
   echo -e "${BOLD}  chicken-stack bootstrap${NC}"
   echo -e "  Apps: ${CYAN}${APPS}${NC}"
+  echo -e "  Root: ${CYAN}${WORKSPACE_ROOT}${NC}"
   echo ""
 
   : > "$LOG_FILE"
   info "Log: $LOG_FILE"
   info "OS=$(detect_os) ARCH=$(detect_arch)"
+  info "Workspace: $WORKSPACE_ROOT"
 
   # Source and run ensure scripts
   source "$SCRIPT_DIR/ensure-git.sh"
@@ -122,18 +124,18 @@ main() {
   step "Repositories"
 
   # chicken is always needed
-  clone_or_update_repo "git@github.com:timjonaswechler/chicken.git" "$WORKSPACE_ROOT/chicken"
+  clone_or_update_repo "$(git_repo_url chicken)" "$WORKSPACE_ROOT/chicken"
 
   # campfire
   if [[ "$APPS" == *"campfire"* || "$APPS" == "all" ]]; then
     mkdir -p "$WORKSPACE_ROOT/fos"
-    clone_or_update_repo "git@github.com:timjonaswechler/campfire.git" "$WORKSPACE_ROOT/fos/campfire"
+    clone_or_update_repo "$(git_repo_url campfire)" "$WORKSPACE_ROOT/fos/campfire"
   fi
 
   # bastion
   if [[ "$APPS" == *"bastion"* || "$APPS" == "all" ]]; then
     mkdir -p "$WORKSPACE_ROOT/fos"
-    clone_or_update_repo "git@github.com:timjonaswechler/bastion.git" "$WORKSPACE_ROOT/fos/bastion"
+    clone_or_update_repo "$(git_repo_url bastion)" "$WORKSPACE_ROOT/fos/bastion"
   fi
 
   # App-specific setup

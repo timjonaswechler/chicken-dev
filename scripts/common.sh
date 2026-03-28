@@ -81,5 +81,29 @@ cp_if_missing() {
   fi
 }
 
-# Resolve workspace root
-WORKSPACE_ROOT="${WORKSPACE_ROOT:-$HOME/GitHub-Projekte}"
+# Resolve workspace root — default to current directory
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(pwd)}"
+
+# Pre-detect git URL style (cached, checked once)
+_init_git_urls() {
+  if [ -z "${_GIT_URLS_DETECTED:-}" ]; then
+    if ssh -o ConnectTimeout=5 -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+      _GIT_SSH_AVAILABLE=true
+      info "SSH-Verbindung zu GitHub: OK"
+    else
+      _GIT_SSH_AVAILABLE=false
+      warn "SSH zu GitHub nicht verfügbar, nutze HTTPS"
+    fi
+    _GIT_URLS_DETECTED=true
+  fi
+}
+
+git_repo_url() {
+  local repo="$1"
+  _init_git_urls
+  if [ "$_GIT_SSH_AVAILABLE" = true ]; then
+    echo "git@github.com:timjonaswechler/${repo}.git"
+  else
+    echo "https://github.com/timjonaswechler/${repo}.git"
+  fi
+}
